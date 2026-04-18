@@ -82,11 +82,11 @@ resource "azurerm_container_app" "openwebui" {
     identity            = azurerm_user_assigned_identity.openwebui.id
   }
 
-  secret {
-    name                = "database-url"
-    key_vault_secret_id = azurerm_key_vault_secret.database_url.versionless_id
-    identity            = azurerm_user_assigned_identity.openwebui.id
-  }
+   secret {
+     name                = "database-url"
+     key_vault_secret_id = azurerm_key_vault_secret.database_url.versionless_id
+     identity            = azurerm_user_assigned_identity.openwebui.id
+   }
 
 
   ingress {
@@ -131,23 +131,12 @@ resource "azurerm_container_app" "openwebui" {
         name = "models"
         path = "/app/chat_frontend/models"
       }
-
-      volume_mounts {
-        name = "data"
-        path = "/app/backend/data"
-      }
     }
 
     volume {
       name         = "models"
       storage_type = "AzureFile"
       storage_name = azurerm_container_app_environment_storage.models.name
-    }
-
-    volume {
-      name         = "data"
-      storage_type = "AzureFile"
-      storage_name = azurerm_container_app_environment_storage.data.name
     }
   }
 

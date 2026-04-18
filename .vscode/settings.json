@@ -1,0 +1,27 @@
+{
+    "pgsql.connections": [
+        {
+            "id": "4FCB3801-111F-4AB0-9175-56C3AA50EE35",
+            "groupId": "D0ACD054-6363-4BCA-A4D7-C1C30BAEAA9A",
+            "authenticationType": "SqlLogin",
+            "connectTimeout": 15,
+            "applicationName": "vscode-pgsql",
+            "clientEncoding": "utf8",
+            "sslmode": "require",
+            "sshSavePassword": true,
+            "savePassword": true,
+            "sslRootCertMode": "none",
+            "server": "psql-openwebui-dev-ne.postgres.database.azure.com",
+            "emptyPasswordInput": false,
+            "expiresOn": 0,
+            "accountId": "00000000-0000-0000-c6e8-2983fcf8da67.9188040d-6c67-4c5b-b112-36a304b66dad",
+            "tenantId": "dd951e89-99bb-40db-9448-eecbead7a7e4",
+            "entraUserName": "mihaisoroceanu6@gmail.com",
+            "database": "",
+            "profileName": "psql-openwebui-dev-ne.postgres.database.azure.com, Azure PostgreSQL CMS - Production (mihaisoroceanu6@gmail.com)",
+            "user": "openwebuiadmin",
+            "password": "",
+            "sshPassword": ""
+        }
+    ]
+}
