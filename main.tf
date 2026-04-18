@@ -82,6 +82,12 @@ resource "azurerm_container_app" "openwebui" {
     identity            = azurerm_user_assigned_identity.openwebui.id
   }
 
+  secret {
+    name                = "database-url"
+    key_vault_secret_id = azurerm_key_vault_secret.database_url.versionless_id
+    identity            = azurerm_user_assigned_identity.openwebui.id
+  }
+
 
   ingress {
     allow_insecure_connections = false
@@ -98,12 +104,27 @@ resource "azurerm_container_app" "openwebui" {
     container {
       name   = "ca-${local.stack}"
       image  = "ghcr.io/open-webui/open-webui:main"
-      cpu    = 0.5
-      memory = "1Gi"
+      cpu    = 1
+      memory = "2Gi"
 
       env {
         name        = "OPENAI_API_KEY"
         secret_name = "openai-api-key"
+      }
+
+      env {
+        name        = "DATABASE_URL"
+        secret_name = "database-url"
+      }
+
+      startup_probe {
+        transport               = "HTTP"
+        path                    = "/health"
+        port                    = 8080
+        initial_delay           = 60
+        interval_seconds        = 15
+        failure_count_threshold = 30
+        timeout                 = 5
       }
 
       volume_mounts {

@@ -43,3 +43,11 @@ resource "azurerm_key_vault_secret" "openai_api_key" {
 
   depends_on = [azurerm_role_assignment.kv_admin]
 }
+
+resource "azurerm_key_vault_secret" "database_url" {
+  name         = "database-url"
+  value        = "postgresql://openwebuiadmin:${var.postgres_admin_password}@${azurerm_postgresql_flexible_server.openwebui.fqdn}/openwebui?sslmode=require"
+  key_vault_id = azurerm_key_vault.openwebui.id
+
+  depends_on = [azurerm_role_assignment.kv_admin]
+}

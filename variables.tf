@@ -33,3 +33,9 @@ variable "openai_api_key" {
   type        = string
   sensitive   = true
 }
+
+variable "postgres_admin_password" {
+  description = "PostgreSQL administrator password"
+  type        = string
+  sensitive   = true
+}
