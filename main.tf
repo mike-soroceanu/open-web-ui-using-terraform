@@ -82,13 +82,6 @@ resource "azurerm_container_app" "openwebui" {
     identity            = azurerm_user_assigned_identity.openwebui.id
   }
 
-   secret {
-     name                = "database-url"
-     key_vault_secret_id = azurerm_key_vault_secret.database_url.versionless_id
-     identity            = azurerm_user_assigned_identity.openwebui.id
-   }
-
-
   ingress {
     allow_insecure_connections = false
     external_enabled           = true
@@ -101,6 +94,18 @@ resource "azurerm_container_app" "openwebui" {
   }
 
   template {
+    min_replicas = 1
+    max_replicas = 10
+
+    custom_scale_rule {
+      name             = "cpu-scaling"
+      custom_rule_type = "cpu"
+      metadata = {
+        type  = "Utilization"
+        value = "75"
+      }
+    }
+
     container {
       name   = "ca-${local.stack}"
       image  = "ghcr.io/open-webui/open-webui:main"
@@ -110,11 +115,6 @@ resource "azurerm_container_app" "openwebui" {
       env {
         name        = "OPENAI_API_KEY"
         secret_name = "openai-api-key"
-      }
-
-      env {
-        name        = "DATABASE_URL"
-        secret_name = "database-url"
       }
 
       startup_probe {
@@ -131,12 +131,24 @@ resource "azurerm_container_app" "openwebui" {
         name = "models"
         path = "/app/chat_frontend/models"
       }
+
+      volume_mounts {
+        name = "data"
+        path = "/app/backend/data"
+      }
     }
 
     volume {
       name         = "models"
       storage_type = "AzureFile"
       storage_name = azurerm_container_app_environment_storage.models.name
+    }
+
+    volume {
+      name          = "data"
+      storage_type  = "AzureFile"
+      storage_name  = azurerm_container_app_environment_storage.data.name
+      mount_options = "nobrl"
     }
   }
 

@@ -229,3 +229,59 @@ az keyvault secret list --vault-name <kv> --query "[].name" -o tsv
 | `startup probe failed: connection refused` | App not yet listening on the target port — may just need more time |
 | `database is locked` | SQLite over Azure Files (SMB) — switch to PostgreSQL |
 | `KEDAScaleTargetDeactivated` | Container kept crashing; KEDA gave up and scaled to 0 |
+
+---
+
+## 11. Custom Domains and DNS Records
+
+To bind a custom domain like `chat.neurodribbler.com` to a Container App, two DNS records are required.
+
+### TXT Record — Domain Ownership Verification
+
+Before Azure issues a TLS certificate, it must verify you control the domain. This is done via a TXT record:
+
+| Field | Value |
+|---|---|
+| Type | TXT |
+| Prefix | `asuid.<subdomain>` (e.g. `asuid.chat`) |
+| Value | The `custom_domain_verification_id` from the Container App Environment |
+
+Only the domain owner can add DNS records, so this proves to Azure that you authorised the binding. The verification ID is unique per CAE and is exposed as a Terraform output or attribute.
+
+### CNAME Record — Traffic Routing
+
+A CNAME (Canonical Name) maps one hostname to another hostname:
+
+| Field | Value |
+|---|---|
+| Type | CNAME |
+| Prefix | `chat` |
+| Value | The Container App's default FQDN (e.g. `ca-openwebui-dev-ne-mike.xxx.northeurope.azurecontainerapps.io`) |
+
+When a browser resolves `chat.neurodribbler.com`, DNS follows the CNAME chain to the Azure FQDN, and Azure routes the request to the correct Container App.
+
+### Why Not an A Record?
+
+An A record maps a hostname to a static IP address. Azure Container Apps does not provide a dedicated static IP — the app sits behind shared Azure infrastructure and the IP can change. A CNAME follows the chain dynamically, always resolving correctly regardless of Azure's underlying IP changes.
+
+**The one exception**: CNAME records are forbidden on apex/root domains (`neurodribbler.com` without a subdomain) by the DNS spec. For apex domains you need either an A record with a static IP or an Azure DNS alias record. Using a subdomain (`chat.`) avoids this restriction entirely.
+
+### Terraform Resources
+
+```hcl
+resource "azurerm_container_app_environment_managed_certificate" "openwebui" {
+  name                           = "cert-${local.stack}"
+  container_app_environment_id   = azurerm_container_app_environment.openwebui.id
+  domain_name                    = "chat.neurodribbler.com"
+  domain_control_validation_type = "CNAME"
+}
+
+resource "azurerm_container_app_custom_domain" "openwebui" {
+  name                                             = "chat.neurodribbler.com"
+  container_app_id                                 = azurerm_container_app.openwebui.id
+  container_app_environment_managed_certificate_id = azurerm_container_app_environment_managed_certificate.openwebui.id
+  certificate_binding_type                         = "SniEnabled"
+}
+```
+
+Azure provisions the managed TLS certificate automatically once DNS validation passes. No certificate files or renewal management needed.

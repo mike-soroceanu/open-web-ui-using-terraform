@@ -32,3 +32,13 @@ output "key_vault_uri" {
   description = "URI of the Key Vault"
   value       = azurerm_key_vault.openwebui.vault_uri
 }
+
+output "custom_domain_verification_id" {
+  description = "TXT record value for custom domain ownership verification"
+  value       = azurerm_container_app_environment.openwebui.custom_domain_verification_id
+}
+
+output "container_app_fqdn" {
+  description = "Default FQDN to use as CNAME target"
+  value       = azurerm_container_app.openwebui.ingress[0].fqdn
+}
