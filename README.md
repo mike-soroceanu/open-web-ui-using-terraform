@@ -73,7 +73,10 @@ Optional variables with defaults:
 
 On a fresh deployment, OpenWebUI has no users. The first person to visit the URL is prompted to register — that account automatically becomes the admin. There is no default username or password.
 
-If you are evaluating this deployment and need access to the live instance at `https://chat.neurodribbler.com`, contact the repository owner to have an account created in advance.
+A demo account has been created for evaluators on the live instance at `https://chat.neurodribbler.com`:
+
+- **Email**: evaluator@test.com
+- **Password**: available on request — contact the repository owner
 
 ## A Note on the Custom Domain
 
