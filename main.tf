@@ -122,8 +122,26 @@ resource "azurerm_container_app" "openwebui" {
         path                    = "/health"
         port                    = 8080
         initial_delay           = 60
-        interval_seconds        = 15
-        failure_count_threshold = 30
+        interval_seconds        = 10
+        failure_count_threshold = 10
+        timeout                 = 5
+      }
+
+      liveness_probe {
+        transport               = "HTTP"
+        path                    = "/health"
+        port                    = 8080
+        interval_seconds        = 30
+        failure_count_threshold = 3
+        timeout                 = 5
+      }
+
+      readiness_probe {
+        transport               = "HTTP"
+        path                    = "/health"
+        port                    = 8080
+        interval_seconds        = 10
+        failure_count_threshold = 3
         timeout                 = 5
       }
 
