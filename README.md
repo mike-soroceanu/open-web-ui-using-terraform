@@ -69,6 +69,16 @@ Optional variables with defaults:
 | `env` | `dev` | Environment name |
 | `location` | `ne` | Short location code for resource naming |
 
+## First-Run Access
+
+On a fresh deployment, OpenWebUI has no users. The first person to visit the URL is prompted to register — that account automatically becomes the admin. There is no default username or password.
+
+If you are evaluating this deployment and need access to the live instance at `https://chat.neurodribbler.com`, contact the repository owner to have an account created in advance.
+
+## A Note on the Custom Domain
+
+The custom domain (`chat.neurodribbler.com`) is tied to a domain registered at a specific registrar. If you deploy this from scratch into your own Azure subscription, the custom domain step will not apply — you would use the default `*.azurecontainerapps.io` URL from the `container_app_url` output instead. Everything else deploys without modification.
+
 ## Deploy
 
 ```bash
